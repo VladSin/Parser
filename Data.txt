@@ -1,0 +1,7 @@
+ CPU Type: 40861
+ Flags: 0
+ SubSystem: 0
+ Image Base: 274432
+ Image Size: 4096
+ Export Table RVA: 0
+ Import Table RVA: 0
