@@ -85,28 +85,28 @@ void jsonRecordingWithImports(requiredFields parsingData, vector<requiredSection
     recordData << "{\n";
 
     if (recordData.is_open()) {
-        recordData << "\t\"" << "cputype"   << "\" : \"" << parsingData.typeCPU        << "\",\n";
-        recordData << "\t\"" << "flags"     << "\" : \"" << parsingData.flags          << "\",\n";
-        recordData << "\t\"" << "imgbase"   << "\" : \"" << parsingData.imageBase      << "\",\n";
-        recordData << "\t\"" << "imagesize" << "\" : \"" << parsingData.imageSize      << "\",\n";
-        recordData << "\t\"" << "subsystem" << "\" : \"" << parsingData.subSystem      << "\",\n";
-        recordData << "\t\"" << "exprva"    << "\" : \"" << parsingData.exportTableRVA << "\",\n";
-        recordData << "\t\"" << "imprva"    << "\" : \"" << parsingData.importTableRVA << "\",\n";
+        recordData << "\t\"" << "cputype"   << "\" : \"" << "0x" << hex << parsingData.typeCPU        << "\",\n";
+        recordData << "\t\"" << "flags"     << "\" : \"" << "0x" << hex << parsingData.flags          << "\",\n";
+        recordData << "\t\"" << "imgbase"   << "\" : \"" << "0x" << hex << parsingData.imageBase      << "\",\n";
+        recordData << "\t\"" << "imagesize" << "\" : \"" << "0x" << hex << parsingData.imageSize      << "\",\n";
+        recordData << "\t\"" << "subsystem" << "\" : \"" << "0x" << hex << parsingData.subSystem      << "\",\n";
+        recordData << "\t\"" << "exprva"    << "\" : \"" << "0x" << hex << parsingData.exportTableRVA << "\",\n";
+        recordData << "\t\"" << "imprva"    << "\" : \"" << "0x" << hex << parsingData.importTableRVA << "\",\n";
         
         recordData << "\t\"" << "sections" << "\" : \n";
         recordData << "\t" << "[\n";
         for (size_t i = 0; i < sectionData.size() - 1; i++) {
-            recordData << "\t\t\"" << sectionData.at(i).sectionName << "\",\n";
+            recordData << "\t\t\"" << "0x" << hex << sectionData.at(i).sectionName << "\",\n";
         }
-        recordData << "\t\t\"" << sectionData.at(sectionData.size() - 1).sectionName << "\"\n";
+        recordData << "\t\t\"" << "0x" << hex << sectionData.at(sectionData.size() - 1).sectionName << "\"\n";
         recordData << "\t" << "],\n";
 
         recordData << "\t\"" << "imports"  << "\" : \n";
         recordData << "\t" << "[\n";
         for (size_t i = 0; i < importData.size() - 1; i++) {
-            recordData << "\t\t\"" << importData.at(i).importName << "\",\n";
+            recordData << "\t\t\"" << "0x" << hex << importData.at(i).importName << "\",\n";
         }
-        recordData << "\t\t\"" << importData.at(importData.size()-1).importName << "\"\n";
+        recordData << "\t\t\"" << "0x" << hex << importData.at(importData.size()-1).importName << "\"\n";
         recordData << "\t" << "]\n";
     }
     else {
@@ -166,8 +166,7 @@ int main(int argc, char* argv[]) {
 
 
     PIMAGE_VXD_HEADER           imageHeader;          // for CPU Type and Flags                  
-    PIMAGE_OPTIONAL_HEADER32    optionalHeader;       // for SubSystem, Image Base and Image Size
-    PIMAGE_DELAYLOAD_DESCRIPTOR delayloadDescription; // for Import Table RVA                     
+    PIMAGE_OPTIONAL_HEADER32    optionalHeader;       // for SubSystem, Image Base and Image Size                     
     PIMAGE_EXPORT_DIRECTORY     exportDirection;      // for Export Table RVA
 
     requiredFields parsingData;
@@ -223,9 +222,9 @@ int main(int argc, char* argv[]) {
             printf("Image Base\t\t0x%x\n", optionalHeader->ImageBase);
             printf("Image Size\t\t0x%x\n", optionalHeader->SizeOfImage);
 
-            delayloadDescription = (PIMAGE_DELAYLOAD_DESCRIPTOR)((u_char*)dosHeader + dosHeader->e_lfanew);
-            parsingData.importTableRVA = delayloadDescription->ImportAddressTableRVA;
-            printf("Import Table RVA\t0x%x\n", delayloadDescription->ImportAddressTableRVA);
+            DWORD importsStartRVA = peHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
+            parsingData.importTableRVA = importsStartRVA;
+            printf("Import Table RVA\t0x%x\n", importsStartRVA);
 
 
             exportDirection = (PIMAGE_EXPORT_DIRECTORY)((u_char*)dosHeader + dosHeader->e_lfanew);
