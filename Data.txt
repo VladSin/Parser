@@ -1,7 +1,18 @@
- CPU Type: 40861
- Flags: 0
- SubSystem: 0
- Image Base: 274432
- Image Size: 4096
- Export Table RVA: 0
- Import Table RVA: 0
+/*// RVA-смещение на массив указателей на данные (функции)
+                thunk = (PIMAGE_THUNK_DATA)importDesc->Characteristics;
+                if (!thunk) thunk = (PIMAGE_THUNK_DATA)importDesc->FirstThunk;
+                thunk = (PIMAGE_THUNK_DATA)((PBYTE)thunk - (PBYTE)delta + (PBYTE)lpFileBase);
+                
+                // Производим перебор данных (функций)
+                while (thunk->u1.AddressOfData){
+                    if (!(thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG)){
+                        // RVA в IMAGE_IMPORT_BY_NAME с импортированным именем API
+                        pOrdinalName = (PIMAGE_IMPORT_BY_NAME)thunk->u1.AddressOfData; 
+                        pOrdinalName = (PIMAGE_IMPORT_BY_NAME)((PBYTE)pOrdinalName + (DWORD)lpFileBase - delta);
+                        // Производим вывод имен данных (функций)
+                        //printf(" %s\n", pOrdinalName->Name);
+
+                        importData.importName.push_back(pOrdinalName->Name);
+                    }
+                    thunk++;
+                }**/
